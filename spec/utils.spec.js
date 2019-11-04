@@ -2,7 +2,8 @@ const { expect } = require("chai");
 const {
   formatDates,
   makeRefObj,
-  formatComments
+  formatComments,
+  renameKeys
 } = require("../db/utils/utils");
 
 describe("formatDates", () => {
@@ -170,4 +171,94 @@ describe("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("takes an array with an object and a reference object, and returns a new array", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const refObj = { 1: "They're not exactly dogs, are they?" };
+    expect(formatComments(input, refObj)).to.be.an("array");
+  });
+  it("takes an array with an object and a reference object, and returns a new array with a well-formatted object", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const refObj = { 1: "They're not exactly dogs, are they?" };
+    const output = formatComments(input, refObj);
+    expect(output[0]).to.include.keys("author", "article_id", "created_at");
+  });
+});
+
+describe("renameKeys", () => {
+  it("takes an array with an object, and two string parameters, and returns a new array", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    expect(renameKeys(input, "belongs_to", "article_id")).to.be.an("array");
+  });
+  it("takes an array with an object, and two strings params, and returns a new array with key name updated", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const output = renameKeys(input, "belongs_to", "article_id");
+    expect(output[0]).to.have.keys(
+      "body",
+      "created_by",
+      "article_id",
+      "votes",
+      "created_at"
+    );
+  });
+  it("does not mutate original array", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const output = renameKeys(input, "belongs_to", "article_id");
+    expect(input).to.not.equal(output);
+    expect(input).to.deep.equal([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ]);
+  });
+});

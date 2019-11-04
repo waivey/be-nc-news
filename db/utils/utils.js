@@ -1,4 +1,4 @@
-exports.formatDates = list => {
+const formatDates = list => {
   return list.map(item => {
     let newItem = { ...item };
     let dateVal = newItem.created_at;
@@ -10,7 +10,7 @@ exports.formatDates = list => {
   });
 };
 
-exports.makeRefObj = list => {
+const makeRefObj = list => {
   const reference = {};
   list.forEach(item => {
     let newItem = { ...item };
@@ -19,4 +19,24 @@ exports.makeRefObj = list => {
   return reference;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+const renameKeys = (arr, keyToChange, newKey) => {
+  return arr.map(object => {
+    const newObj = { ...object };
+    const value = newObj[keyToChange];
+    newObj[newKey] = value;
+    delete newObj[keyToChange];
+    return { ...newObj };
+  });
+};
+
+const formatComments = (comments, articleRef) => {
+  let newComments = renameKeys(comments, "created_by", "author");
+  newComments = renameKeys(newComments, "belongs_to", "article_id");
+  return newComments.map(object => {
+    object.article_id = articleRef[object.article_id];
+    console.log(object.article_id);
+    return { ...object };
+  });
+};
+
+module.exports = { formatDates, makeRefObj, formatComments, renameKeys };
