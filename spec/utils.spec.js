@@ -107,8 +107,9 @@ describe("makeRefObj", () => {
         created_at: 533132514171
       }
     ];
+
     expect(makeRefObj(input)).to.deep.equal({
-      1: "They're not exactly dogs, are they?"
+      "They're not exactly dogs, are they?": 1
     });
   });
   it("takes an array with multiple objects, and returns an object with key/value pairs of article_id:title", () => {
@@ -139,10 +140,11 @@ describe("makeRefObj", () => {
         created_at: 280844514171
       }
     ];
+
     expect(makeRefObj(input)).to.deep.equal({
-      1: "They're not exactly dogs, are they?",
-      2: "Seven inspirational thought leaders from Manchester UK",
-      3: "Am I a cat?"
+      "They're not exactly dogs, are they?": 1,
+      "Seven inspirational thought leaders from Manchester UK": 2,
+      "Am I a cat?": 3
     });
   });
   it("does not mutate original array", () => {
@@ -183,7 +185,7 @@ describe("formatComments", () => {
         created_at: 1511354163389
       }
     ];
-    const refObj = { 1: "They're not exactly dogs, are they?" };
+    const refObj = { "They're not exactly dogs, are they?": 1 };
     expect(formatComments(input, refObj)).to.be.an("array");
   });
   it("takes an array with an object and a reference object, and returns a new array with a well-formatted object", () => {
@@ -197,9 +199,78 @@ describe("formatComments", () => {
         created_at: 1511354163389
       }
     ];
-    const refObj = { 1: "They're not exactly dogs, are they?" };
+    const refObj = { "They're not exactly dogs, are they?": 1 };
     const output = formatComments(input, refObj);
-    expect(output[0]).to.include.keys("author", "article_id", "created_at");
+    expect(output[0]).to.have.keys(
+      "author",
+      "article_id",
+      "created_at",
+      "body",
+      "votes"
+    );
+  });
+  it("does not mutate original array", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const refObj = { "They're not exactly dogs, are they?": 1 };
+    const output = formatComments(input, refObj);
+    expect(input).to.not.equal(output);
+    expect(input).to.deep.equal([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ]);
+  });
+  it("takes an array of multiple objects and a reference object, and returns an array of well-formatted objects", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      },
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      },
+      {
+        body:
+          "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 100,
+        created_at: 1448282163389
+      }
+    ];
+    const refObj = { "They're not exactly dogs, are they?": 1 };
+    const output = formatComments(input, refObj);
+    expect(output.length).to.equal(3);
+    expect(output[1]).to.have.keys(
+      "author",
+      "article_id",
+      "created_at",
+      "body",
+      "votes"
+    );
   });
 });
 

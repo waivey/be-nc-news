@@ -14,7 +14,7 @@ const makeRefObj = list => {
   const reference = {};
   list.forEach(item => {
     let newItem = { ...item };
-    reference[newItem.article_id] = newItem.title;
+    reference[newItem.title] = newItem.article_id;
   });
   return reference;
 };
@@ -31,12 +31,15 @@ const renameKeys = (arr, keyToChange, newKey) => {
 
 const formatComments = (comments, articleRef) => {
   let newComments = renameKeys(comments, "created_by", "author");
-  newComments = renameKeys(newComments, "belongs_to", "article_id");
-  return newComments.map(object => {
-    object.article_id = articleRef[object.article_id];
-    console.log(object.article_id);
+  const updated = newComments.map(object => {
+    object.article_id = articleRef[object.belongs_to];
+
+    delete object.belongs_to;
     return { ...object };
   });
+  const fullyFormated = formatDates(updated);
+  console.log(fullyFormated);
+  return fullyFormated;
 };
 
 module.exports = { formatDates, makeRefObj, formatComments, renameKeys };
