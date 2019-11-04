@@ -38,7 +38,7 @@ describe("formatDates", () => {
       "votes",
       "created_by"
     );
-    // expect(output).instanceOf(Date);
+    expect(output[0].created_at).instanceOf(Date);
   });
   it("returns an array of objects with key/value pairs of created_at updated to timestamp format", () => {
     const input = [
