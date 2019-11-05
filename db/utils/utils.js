@@ -38,7 +38,7 @@ const formatComments = (comments, articleRef) => {
     return { ...object };
   });
   const fullyFormated = formatDates(updated);
-  console.log(fullyFormated);
+
   return fullyFormated;
 };
 
