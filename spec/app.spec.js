@@ -60,6 +60,14 @@ describe("app", () => {
                 expect(user).to.have.keys("username", "avatar_url", "name");
               });
           });
+          it("status:404 valid but non-existent username", () => {
+            return request
+              .get("/api/users/waivey")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
         });
       });
     });
