@@ -85,39 +85,72 @@ describe("app", () => {
     });
     describe("/articles", () => {
       describe("/:article_id", () => {
-        it("status:200 responds with an article object with properities author, title, article_id, body, topic, created_at, votes, comment_count", () => {
-          return request
-            .get("/api/articles/1")
-            .expect(200)
-            .then(({ body: { article } }) => {
-              expect(article).to.have.keys(
-                "author",
-                "title",
-                "article_id",
-                "body",
-                "topic",
-                "created_at",
-                "votes",
-                "comment_count"
-              );
-              expect(article.comment_count).to.equal("13");
+        describe("GET", () => {
+          it("status:200 responds with an article object with properities author, title, article_id, body, topic, created_at, votes, comment_count", () => {
+            return request
+              .get("/api/articles/1")
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article).to.have.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "body",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "comment_count"
+                );
+                expect(article.comment_count).to.equal("13");
+              });
+          });
+          it("status:404 valid but non-existent article_id", () => {
+            return request
+              .get("/api/articles/1234567")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
+          it("status:400 Bad Request -> invalid article id", () => {
+            return request
+              .get("/api/articles/bananas")
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:405 method not allowed", () => {
+            const invalidMethods = ["post", "put", "delete"];
+            const promiseArr = invalidMethods.map(method => {
+              return request[method]("/api/topics")
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal("Method Not Allowed");
+                });
             });
+            return promiseArr;
+          });
         });
-        it("status:404 valid but non-existent article_id", () => {
-          return request
-            .get("/api/articles/1234567")
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal("Path Not Found");
-            });
-        });
-        it("status:400 Bad Request -> invalid article id", () => {
-          return request
-            .get("/api/articles/bananas")
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal("Bad Request");
-            });
+        describe("PATCH", () => {
+          it("status:201 responds with an updated article object with votes property having been updated according to the request -> increasing", () => {
+            return request
+              .patch("/api/articles/1")
+              .send({ inc_votes: 1 })
+              .expect(201)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(101);
+                expect(article).to.have.keys(
+                  "article_id",
+                  "title",
+                  "body",
+                  "votes",
+                  "topic",
+                  "author",
+                  "created_at"
+                );
+              });
+          });
         });
       });
     });

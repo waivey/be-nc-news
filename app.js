@@ -8,6 +8,8 @@ const {
   handlePsql400s
 } = require("./errors");
 
+app.use(express.json());
+
 app.use("/api", apiRouter);
 
 //error handling
