@@ -132,7 +132,7 @@ describe("app", () => {
             return promiseArr;
           });
         });
-        describe("PATCH", () => {
+        describe.only("PATCH", () => {
           it("status:201 responds with an updated article object with votes property having been updated according to the request -> increasing", () => {
             return request
               .patch("/api/articles/1")
