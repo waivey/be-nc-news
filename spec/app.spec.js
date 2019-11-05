@@ -68,6 +68,17 @@ describe("app", () => {
                 expect(msg).to.equal("Path Not Found");
               });
           });
+          it("status:405 Method Not Allowed", () => {
+            const invalidMethods = ["post", "patch", "put", "delete"];
+            const promiseArr = invalidMethods.map(method => {
+              return request[method]("/api/topics")
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal("Method Not Allowed");
+                });
+            });
+            return promiseArr;
+          });
         });
       });
     });
