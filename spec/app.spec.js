@@ -108,7 +108,15 @@ describe("app", () => {
             .get("/api/articles/1234567")
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg);
+              expect(msg).to.equal("Path Not Found");
+            });
+        });
+        it("status:400 Bad Request -> invalid article id", () => {
+          return request
+            .get("/api/articles/bananas")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Bad Request");
             });
         });
       });
