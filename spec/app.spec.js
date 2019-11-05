@@ -49,5 +49,19 @@ describe("app", () => {
         });
       });
     });
+    describe("/users", () => {
+      describe("/:username", () => {
+        describe("GET", () => {
+          it("status:200 responds with a user object with properites of username, avatar_url, and name", () => {
+            return request
+              .get("/api/users/butter_bridge")
+              .expect(200)
+              .then(({ body: { user } }) => {
+                expect(user).to.have.keys("username", "avatar_url", "name");
+              });
+          });
+        });
+      });
+    });
   });
 });
