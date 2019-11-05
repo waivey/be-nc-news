@@ -89,7 +89,7 @@ describe("app", () => {
           return request
             .get("/api/articles/1")
             .expect(200)
-            .then(({ boy: { article } }) => {
+            .then(({ body: { article } }) => {
               expect(article).to.have.keys(
                 "author",
                 "title",
@@ -100,6 +100,7 @@ describe("app", () => {
                 "votes",
                 "comment_count"
               );
+              expect(article.comment_count).to.equal("13");
             });
         });
       });
