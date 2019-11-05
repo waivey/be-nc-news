@@ -1,6 +1,7 @@
 process.env.NODE_ENV = "test";
 const chai = require("chai");
 const { expect } = require("chai");
+const chaiSorted = require("chai-sorted");
 const app = require("../app.js");
 const request = require("supertest")(app);
 const knex = require("../db/connection");
@@ -52,7 +53,7 @@ describe("app", () => {
     describe("/users", () => {
       describe("/:username", () => {
         describe("GET", () => {
-          it("status:200 responds with a user object with properites of username, avatar_url, and name", () => {
+          it("status:200 responds with a user object with properities of username, avatar_url, and name", () => {
             return request
               .get("/api/users/butter_bridge")
               .expect(200)
@@ -79,6 +80,27 @@ describe("app", () => {
             });
             return promiseArr;
           });
+        });
+      });
+    });
+    describe("/articles", () => {
+      describe("/:article_id", () => {
+        it("status:200 responds with an article object with properities author, title, article_id, body, topic, created_at, votes, comment_count", () => {
+          return request
+            .get("/api/articles/1")
+            .expect(200)
+            .then(({ boy: { article } }) => {
+              expect(article).to.have.keys(
+                "author",
+                "title",
+                "article_id",
+                "body",
+                "topic",
+                "created_at",
+                "votes",
+                "comment_count"
+              );
+            });
         });
       });
     });
