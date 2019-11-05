@@ -151,6 +151,24 @@ describe("app", () => {
                 );
               });
           });
+          it("status:201 responds with an updated article object with votes property having been updated according to the request -> decreasing", () => {
+            return request
+              .patch("/api/articles/1")
+              .send({ inc_votes: -5 })
+              .expect(201)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(95);
+                expect(article).to.have.keys(
+                  "article_id",
+                  "title",
+                  "body",
+                  "votes",
+                  "topic",
+                  "author",
+                  "created_at"
+                );
+              });
+          });
         });
       });
     });

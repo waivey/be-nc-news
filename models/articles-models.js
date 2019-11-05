@@ -16,9 +16,10 @@ exports.fetchArticle = article_id => {
 };
 
 exports.updateVotes = (article_id, newVotes) => {
+  const update = newVotes > 0 ? "increment" : "decrement";
   return knex("articles")
     .where("article_id", article_id)
-    .increment("votes", newVotes)
+    [update]("votes", Math.abs(newVotes))
     .then(() => {
       return knex
         .select("*")
