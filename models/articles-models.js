@@ -7,10 +7,14 @@ exports.fetchArticle = article_id => {
     .where("article_id", article_id)
     .returning("*")
     .then(([article]) => {
-      const commentCount = knex("comments")
-        .count("article_id")
-        .where("article_id", article_id);
-      return Promise.all([article, commentCount]);
+      if (!article) {
+        return Promise.reject({ status: 404, msg: "Path Not Found" });
+      } else {
+        const commentCount = knex("comments")
+          .count("article_id")
+          .where("article_id", article_id);
+        return Promise.all([article, commentCount]);
+      }
     })
     .then(response => {
       const obj = response[0];

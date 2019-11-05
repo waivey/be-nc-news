@@ -103,6 +103,14 @@ describe("app", () => {
               expect(article.comment_count).to.equal("13");
             });
         });
+        it("status:404 valid but non-existent article_id", () => {
+          return request
+            .get("/api/articles/1234567")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg);
+            });
+        });
       });
     });
   });
