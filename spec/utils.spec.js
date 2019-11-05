@@ -209,6 +209,21 @@ describe("formatComments", () => {
       "votes"
     );
   });
+  it("takes an array with an object and a reference object, and returns a new array with a well-formatted object with created_at key being an instance of Date constructor", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const refObj = { "They're not exactly dogs, are they?": 1 };
+    const output = formatComments(input, refObj);
+    expect(output[0].created_at).instanceOf(Date);
+  });
   it("does not mutate original array", () => {
     const input = [
       {
