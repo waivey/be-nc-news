@@ -2,24 +2,16 @@ const knex = require("../db/connection");
 
 exports.fetchArticle = article_id => {
   return knex
-    .select("*")
+    .select("articles.*")
     .from("articles")
-    .where("article_id", article_id)
-    .returning("*")
-    .then(([article]) => {
-      if (!article) {
-        return Promise.reject({ status: 404, msg: "Path Not Found" });
-      } else {
-        const commentCount = knex("comments")
-          .count("article_id")
-          .where("article_id", article_id);
-        return Promise.all([article, commentCount]);
-      }
-    })
-    .then(response => {
-      const obj = response[0];
-      obj.comment_count = response[1][0].count;
-      return obj;
+    .count({ comment_count: "comments.comment_id" })
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
+    .groupBy("articles.article_id")
+    .where("articles.article_id", article_id)
+    .then(([result]) => {
+      return !result
+        ? Promise.reject({ status: 404, msg: "Path Not Found" })
+        : result;
     });
 };
 
