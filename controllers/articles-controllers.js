@@ -49,13 +49,8 @@ exports.getComments = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
   let article_id;
-  let sort_by;
-  let order;
-  if (req.query) {
-    sort_by = req.query.sort_by;
-    order = req.query.order;
-  }
-  fetchArticles(article_id, sort_by, order)
+
+  fetchArticles(article_id, req.query)
     .then(articles => {
       res.status(200).send({ articles });
     })

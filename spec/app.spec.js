@@ -139,6 +139,22 @@ describe("app", () => {
                 expect(articles).to.be.ascendingBy("votes");
               });
           });
+          it("status:200 array of article objects filtered by query of author", () => {
+            return request
+              .get("/api/articles?author=butter_bridge")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles[0].author).to.equal("butter_bridge");
+              });
+          });
+          it("status:200 array of article objects filtered by query of topic", () => {
+            return request
+              .get("/api/articles?topic=mitch")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles[0].topic).to.equal("mitch");
+              });
+          });
         });
       });
       describe("/:article_id", () => {
