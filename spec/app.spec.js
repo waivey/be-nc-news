@@ -375,6 +375,47 @@ describe("app", () => {
                 expect(msg).to.equal("Path Not Found");
               });
           });
+          it("status:400 Bad Request comment_id", () => {
+            return request
+              .patch("/api/comments/bananas")
+              .send({ inc_vote: 1 })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+        });
+        describe("DELETE", () => {
+          it("status:405 Method Not Allow", () => {
+            const invalidMethods = ["get", "post", "put"];
+            const promiseArr = invalidMethods.map(method => {
+              return request[method]("/api/comments/:comment_id")
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal("Method Not Allowed");
+                });
+            });
+            return promiseArr;
+          });
+          it("status:204 no content in response", () => {
+            return request.delete("/api/comments/1").expect(204);
+          });
+          it("status:400 Bad Request", () => {
+            return request
+              .delete("/api/comments/bananas")
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:404 valid but nonexistent comment id", () => {
+            return request
+              .delete("/api/comments/1234566")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
         });
       });
     });

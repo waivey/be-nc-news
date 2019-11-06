@@ -17,3 +17,14 @@ exports.updateComment = (comment_id, newVotes) => {
         : updatedComment;
     });
 };
+
+exports.removeComment = comment_id => {
+  return knex("comments")
+    .where("comment_id", comment_id)
+    .del()
+    .then(delCount => {
+      return delCount === 0
+        ? Promise.reject({ status: 404, msg: "Path Not Found" })
+        : delCount;
+    });
+};
