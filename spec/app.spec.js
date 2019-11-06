@@ -366,6 +366,15 @@ describe("app", () => {
                 expect(comment.votes).to.equal(17);
               });
           });
+          it("status:404 valid but nonexistent comment_id", () => {
+            return request
+              .patch("/api/comments/1233456")
+              .send({ inc_vote: 1 })
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
         });
       });
     });

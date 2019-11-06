@@ -10,5 +10,10 @@ exports.updateComment = (comment_id, newVotes) => {
         .select("*")
         .from("comments")
         .where("comment_id", comment_id);
+    })
+    .then(([updatedComment]) => {
+      return !updatedComment
+        ? Promise.reject({ status: 404, msg: "Path Not Found" })
+        : updatedComment;
     });
 };
