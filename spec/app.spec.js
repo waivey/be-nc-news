@@ -218,6 +218,14 @@ describe("app", () => {
                 );
               });
           });
+          it("status:200 responds with comments object with default sorting by created_at in descending order", () => {
+            return request
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.descendingBy("created_at");
+              });
+          });
         });
         describe("POST", () => {
           it("status:201 responds with posted comment", () => {
