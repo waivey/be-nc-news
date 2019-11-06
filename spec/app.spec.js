@@ -28,6 +28,17 @@ describe("app", () => {
   });
   describe("/api", () => {
     describe("/topics", () => {
+      it("status:405 responds with method not allowed", () => {
+        const invalidMethods = ["post", "patch", "put", "delete"];
+        const promiseArr = invalidMethods.map(method => {
+          return request[method]("/api/topics")
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Method Not Allowed");
+            });
+        });
+        return promiseArr;
+      });
       describe("GET", () => {
         it("status:200 responds with an object with an array of topic objects", () => {
           return request
@@ -38,10 +49,14 @@ describe("app", () => {
               expect(topics[0]).to.have.keys("slug", "description");
             });
         });
-        it("status:405 responds with method not allowed", () => {
+      });
+    });
+    describe("/users", () => {
+      describe("/:username", () => {
+        it("status:405 Method Not Allowed", () => {
           const invalidMethods = ["post", "patch", "put", "delete"];
           const promiseArr = invalidMethods.map(method => {
-            return request[method]("/api/topics")
+            return request[method]("/api/users/butter_bridge")
               .expect(405)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Method Not Allowed");
@@ -49,10 +64,6 @@ describe("app", () => {
           });
           return promiseArr;
         });
-      });
-    });
-    describe("/users", () => {
-      describe("/:username", () => {
         describe("GET", () => {
           it("status:200 responds with a user object with properities of username, avatar_url, and name", () => {
             return request
@@ -69,17 +80,6 @@ describe("app", () => {
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Path Not Found");
               });
-          });
-          it("status:405 Method Not Allowed", () => {
-            const invalidMethods = ["post", "patch", "put", "delete"];
-            const promiseArr = invalidMethods.map(method => {
-              return request[method]("/api/topics")
-                .expect(405)
-                .then(({ body: { msg } }) => {
-                  expect(msg).to.equal("Method Not Allowed");
-                });
-            });
-            return promiseArr;
           });
         });
       });
@@ -142,6 +142,17 @@ describe("app", () => {
         });
       });
       describe("/:article_id", () => {
+        it("status:405 method not allowed", () => {
+          const invalidMethods = ["post", "put", "delete"];
+          const promiseArr = invalidMethods.map(method => {
+            return request[method]("/api/articles/1")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Allowed");
+              });
+          });
+          return promiseArr;
+        });
         describe("GET", () => {
           it("status:200 responds with an article object with properities author, title, article_id, body, topic, created_at, votes, comment_count", () => {
             return request
@@ -176,17 +187,6 @@ describe("app", () => {
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Bad Request");
               });
-          });
-          it("status:405 method not allowed", () => {
-            const invalidMethods = ["post", "put", "delete"];
-            const promiseArr = invalidMethods.map(method => {
-              return request[method]("/api/topics")
-                .expect(405)
-                .then(({ body: { msg } }) => {
-                  expect(msg).to.equal("Method Not Allowed");
-                });
-            });
-            return promiseArr;
           });
         });
         describe("PATCH", () => {
@@ -348,6 +348,17 @@ describe("app", () => {
     });
     describe("/comments", () => {
       describe("/comments/:comment_id", () => {
+        it("status:405 Method Not Allow", () => {
+          const invalidMethods = ["get", "post", "put"];
+          const promiseArr = invalidMethods.map(method => {
+            return request[method]("/api/comments/:comment_id")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Allowed");
+              });
+          });
+          return promiseArr;
+        });
         describe("PATCH", () => {
           it("status:201 responds with the updated comment", () => {
             return request
@@ -384,19 +395,17 @@ describe("app", () => {
                 expect(msg).to.equal("Bad Request");
               });
           });
+          it("status:400 Bad Request -> invalid input", () => {
+            return request
+              .patch("/api/comments/1")
+              .send({ inc_votes: "yes" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
         });
         describe("DELETE", () => {
-          it("status:405 Method Not Allow", () => {
-            const invalidMethods = ["get", "post", "put"];
-            const promiseArr = invalidMethods.map(method => {
-              return request[method]("/api/comments/:comment_id")
-                .expect(405)
-                .then(({ body: { msg } }) => {
-                  expect(msg).to.equal("Method Not Allowed");
-                });
-            });
-            return promiseArr;
-          });
           it("status:204 no content in response", () => {
             return request.delete("/api/comments/1").expect(204);
           });
