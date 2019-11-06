@@ -346,5 +346,22 @@ describe("app", () => {
         });
       });
     });
+    describe("/comments", () => {
+      describe("/comments/:comment_id", () => {
+        describe("PATCH", () => {
+          it("status:201 responds with the updated comment", () => {
+            return request
+              .patch("/api/comments/1")
+              .send({ inc_vote: 1 })
+              .expect(201)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.equal(
+                  "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+                );
+              });
+          });
+        });
+      });
+    });
   });
 });

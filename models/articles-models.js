@@ -9,7 +9,6 @@ exports.fetchArticles = (article_id, order_by, direction) => {
     .groupBy("articles.article_id")
     .modify(query => {
       !direction ? (direction = "desc") : direction;
-      console.log(direction);
       if (order_by) query.orderBy(order_by, direction);
       else query.orderBy("created_at", direction);
     })
