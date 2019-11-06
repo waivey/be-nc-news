@@ -189,6 +189,19 @@ describe("app", () => {
           });
         });
       });
+      describe("/:article_id/comments", () => {
+        describe("POST", () => {
+          it("status:201 responds with posted comment", () => {
+            return request
+              .post("/api/articles/1/comments")
+              .send({ username: "butter_bridge", body: "yes, totally" })
+              .expect(201)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.equal("yes, totally");
+              });
+          });
+        });
+      });
     });
   });
 });

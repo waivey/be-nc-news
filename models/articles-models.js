@@ -27,3 +27,15 @@ exports.updateVotes = (article_id, newVotes) => {
         .where("article_id", article_id);
     });
 };
+
+exports.addComment = commentObj => {
+  const value = commentObj.username;
+  commentObj.author = value;
+  delete commentObj.username;
+  return knex("comments")
+    .insert(commentObj)
+    .returning("*")
+    .then(([newCommentObj]) => {
+      return newCommentObj.body;
+    });
+};
