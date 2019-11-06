@@ -355,9 +355,15 @@ describe("app", () => {
               .send({ inc_vote: 1 })
               .expect(201)
               .then(({ body: { comment } }) => {
-                expect(comment).to.equal(
-                  "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+                expect(comment).to.have.keys(
+                  "comment_id",
+                  "created_at",
+                  "article_id",
+                  "author",
+                  "votes",
+                  "body"
                 );
+                expect(comment.votes).to.equal(17);
               });
           });
         });
