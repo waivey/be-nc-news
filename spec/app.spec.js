@@ -190,6 +190,17 @@ describe("app", () => {
         });
       });
       describe("/:article_id/comments", () => {
+        it("status:405 Method Not Allowed", () => {
+          const invalidMethods = ["patch", "put", "delete"];
+          const promiseArr = invalidMethods.map(method => {
+            return request[method]("/api/topics")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Allowed");
+              });
+          });
+          return promiseArr;
+        });
         describe("POST", () => {
           it("status:201 responds with posted comment", () => {
             return request
