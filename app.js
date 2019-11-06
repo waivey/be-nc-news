@@ -5,7 +5,8 @@ const {
   handle404s,
   handle500s,
   handleCustomErrors,
-  handlePsql400s
+  handlePsql400s,
+  handle422s
 } = require("./errors");
 
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use("/api", apiRouter);
 //error handling
 app.all("/*", handle404s);
 app.use(handlePsql400s);
+app.use(handle422s);
 app.use(handleCustomErrors);
 app.use(handle500s);
 

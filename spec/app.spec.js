@@ -200,6 +200,24 @@ describe("app", () => {
                 expect(comment).to.equal("yes, totally");
               });
           });
+          it("status:422 Unprocessable Entity for valid but nonexistent article id", () => {
+            return request
+              .post("/api/articles/123455/comments")
+              .send({ username: "butter_bridge", body: "yes, totally" })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Unprocessable Entity");
+              });
+          });
+          it("status:400 Bad Request for invalid article id", () => {
+            return request
+              .post("/api/articles/bananas/comments")
+              .send({ username: "butter_bridge", body: "yes, totally" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
         });
       });
     });
