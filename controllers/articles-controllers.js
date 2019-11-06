@@ -13,7 +13,9 @@ exports.getArticle = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  updateVotes(article_id, inc_votes).then(([article]) => {
-    res.status(201).send({ article });
-  });
+  updateVotes(article_id, inc_votes)
+    .then(([article]) => {
+      res.status(201).send({ article });
+    })
+    .catch(next);
 };

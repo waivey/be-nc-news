@@ -132,7 +132,7 @@ describe("app", () => {
             return promiseArr;
           });
         });
-        describe.only("PATCH", () => {
+        describe("PATCH", () => {
           it("status:201 responds with an updated article object with votes property having been updated according to the request -> increasing", () => {
             return request
               .patch("/api/articles/1")
@@ -167,6 +167,24 @@ describe("app", () => {
                   "author",
                   "created_at"
                 );
+              });
+          });
+          it("status:400 Bad Request -> invalid article id", () => {
+            return request
+              .patch("/api/articles/bananas")
+              .send({ inc_votes: 1 })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:400 Bad Request -> invalid input", () => {
+            return request
+              .patch("/api/articles/1")
+              .send({ inc_votes: "yes" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
               });
           });
         });
