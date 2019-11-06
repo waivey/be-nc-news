@@ -1,13 +1,18 @@
 const knex = require("../db/connection");
 
-exports.fetchArticles = article_id => {
+exports.fetchArticles = (article_id, order_by, direction) => {
   return knex
     .select("articles.*")
     .from("articles")
     .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
-    .orderBy("created_at", "desc")
+    .modify(query => {
+      !direction ? (direction = "desc") : direction;
+      console.log(direction);
+      if (order_by) query.orderBy(order_by, direction);
+      else query.orderBy("created_at", direction);
+    })
     .modify(query => {
       if (article_id) query.where("articles.article_id", article_id);
     })

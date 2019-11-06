@@ -115,12 +115,28 @@ describe("app", () => {
                 );
               });
           });
-          it("status:200 array of article objects defaul sort by date in descending order", () => {
+          it("status:200 array of article objects default sort by date in descending order", () => {
             return request
               .get("/api/articles")
               .expect(200)
               .then(({ body: { articles } }) => {
                 expect(articles).to.be.descendingBy("created_at");
+              });
+          });
+          it("status:200 array of article objects sorted by query in descending order", () => {
+            return request
+              .get("/api/articles?sort_by=author")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles).to.be.descendingBy("author");
+              });
+          });
+          it("status:200 array of article objects sorted by query in chosen order", () => {
+            return request
+              .get("/api/articles?sort_by=votes&order=asc")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles).to.be.ascendingBy("votes");
               });
           });
         });
