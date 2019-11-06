@@ -3,9 +3,15 @@ const {
   getArticle,
   patchArticleVotes,
   postComment,
-  getComments
+  getComments,
+  getAllArticles
 } = require("../controllers/articles-controllers.js");
 const { handle405s } = require("../errors");
+
+articlesRouter
+  .route("/")
+  .get(getAllArticles)
+  .all(handle405s);
 
 articlesRouter
   .route("/:article_id")

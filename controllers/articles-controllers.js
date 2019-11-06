@@ -1,5 +1,5 @@
 const {
-  fetchArticle,
+  fetchArticles,
   updateVotes,
   addComment,
   fetchComments
@@ -8,8 +8,8 @@ const {
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
 
-  fetchArticle(article_id)
-    .then(article => {
+  fetchArticles(article_id)
+    .then(([article]) => {
       res.status(200).send({ article });
     })
     .catch(next);
@@ -43,6 +43,14 @@ exports.getComments = (req, res, next) => {
   fetchComments(article_id, sort_by, order)
     .then(comments => {
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.getAllArticles = (req, res, next) => {
+  fetchArticles()
+    .then(articles => {
+      res.status(200).send({ articles });
     })
     .catch(next);
 };

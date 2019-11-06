@@ -1,17 +1,30 @@
 const knex = require("../db/connection");
 
-exports.fetchArticle = article_id => {
+exports.fetchArticles = article_id => {
   return knex
     .select("articles.*")
     .from("articles")
     .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
-    .where("articles.article_id", article_id)
-    .then(([result]) => {
-      return !result
+    .orderBy("created_at", "desc")
+    .modify(query => {
+      if (article_id) query.where("articles.article_id", article_id);
+    })
+    .then(result => {
+      return result.length === 0
         ? Promise.reject({ status: 404, msg: "Path Not Found" })
         : result;
+    })
+    .then(result => {
+      if (!article_id) {
+        return result.map(article => {
+          delete article.body;
+          return { ...article };
+        });
+      } else {
+        return result;
+      }
     });
 };
 

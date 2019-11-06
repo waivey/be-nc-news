@@ -85,6 +85,46 @@ describe("app", () => {
       });
     });
     describe("/articles", () => {
+      describe("/", () => {
+        describe("status:405 Method Not Allowed", () => {
+          const invalidMethods = ["post", "patch", "put", "delete"];
+          const promiseArr = invalidMethods.map(method => {
+            return request[method]("/api/articles")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Allowed");
+              });
+          });
+          return promiseArr;
+        });
+        describe("GET", () => {
+          it("status:200 responds with an articles object", () => {
+            return request
+              .get("/api/articles")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles).to.be.an("array");
+                expect(articles[1]).to.have.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "comment_count"
+                );
+              });
+          });
+          it("status:200 array of article objects defaul sort by date in descending order", () => {
+            return request
+              .get("/api/articles")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles).to.be.descendingBy("created_at");
+              });
+          });
+        });
+      });
       describe("/:article_id", () => {
         describe("GET", () => {
           it("status:200 responds with an article object with properities author, title, article_id, body, topic, created_at, votes, comment_count", () => {
@@ -194,7 +234,7 @@ describe("app", () => {
         it("status:405 Method Not Allowed", () => {
           const invalidMethods = ["patch", "put", "delete"];
           const promiseArr = invalidMethods.map(method => {
-            return request[method]("/api/topics")
+            return request[method]("/api/articles/:article_id/comments")
               .expect(405)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Method Not Allowed");
