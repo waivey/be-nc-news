@@ -226,6 +226,14 @@ describe("app", () => {
                 expect(comments).to.be.descendingBy("created_at");
               });
           });
+          it("status:200 responds with comments object sorted by entered query in chosen order", () => {
+            return request
+              .get("/api/articles/1/comments?sort_by=author")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.descendingBy("author");
+              });
+          });
         });
         describe("POST", () => {
           it("status:201 responds with posted comment", () => {

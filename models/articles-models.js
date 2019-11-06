@@ -40,10 +40,13 @@ exports.addComment = commentObj => {
     });
 };
 
-exports.fetchComments = article_id => {
+exports.fetchComments = (article_id, order_by) => {
   return knex
     .select("comment_id", "votes", "created_at", "author", "body")
     .from("comments")
     .where("article_id", article_id)
-    .orderBy("created_at", "desc");
+    .modify(query => {
+      if (order_by) query.orderBy(order_by, "desc");
+      else query.orderBy("created_at", "desc");
+    });
 };
