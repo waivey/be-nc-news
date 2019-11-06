@@ -242,6 +242,22 @@ describe("app", () => {
                 expect(comments).to.be.ascendingBy("votes");
               });
           });
+          it("status:422 Unprocessable Entity for valid but nonexistent article id", () => {
+            return request
+              .get("/api/articles/123455/comments")
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Unprocessable Entity");
+              });
+          });
+          it("status:400 Bad Request for invalid article id", () => {
+            return request
+              .get("/api/articles/bananas/comments")
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
         });
         describe("POST", () => {
           it("status:201 responds with posted comment", () => {

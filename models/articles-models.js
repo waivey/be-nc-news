@@ -49,5 +49,10 @@ exports.fetchComments = (article_id, order_by, direction) => {
       !direction ? (direction = "desc") : direction;
       if (order_by) query.orderBy(order_by, direction);
       else query.orderBy("created_at", direction);
+    })
+    .then(comments => {
+      return comments.length === 0
+        ? Promise.reject({ status: 422, msg: "Unprocessable Entity" })
+        : comments;
     });
 };
