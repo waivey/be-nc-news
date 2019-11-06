@@ -2,6 +2,7 @@ process.env.NODE_ENV = "test";
 const chai = require("chai");
 const { expect } = require("chai");
 const chaiSorted = require("chai-sorted");
+chai.use(chaiSorted);
 const app = require("../app.js");
 const request = require("supertest")(app);
 const knex = require("../db/connection");
@@ -200,6 +201,23 @@ describe("app", () => {
               });
           });
           return promiseArr;
+        });
+        describe("GET", () => {
+          it("status:200 responds with comments object", () => {
+            return request
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.an("array");
+                expect(comments[1]).to.have.keys(
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body"
+                );
+              });
+          });
         });
         describe("POST", () => {
           it("status:201 responds with posted comment", () => {
