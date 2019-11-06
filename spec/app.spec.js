@@ -226,12 +226,20 @@ describe("app", () => {
                 expect(comments).to.be.descendingBy("created_at");
               });
           });
-          it("status:200 responds with comments object sorted by entered query in chosen order", () => {
+          it("status:200 responds with comments object sorted by entered query in default order", () => {
             return request
               .get("/api/articles/1/comments?sort_by=author")
               .expect(200)
               .then(({ body: { comments } }) => {
                 expect(comments).to.be.descendingBy("author");
+              });
+          });
+          it("status:200 responds with comments object sorted by entered query in custom", () => {
+            return request
+              .get("/api/articles/1/comments?sort_by=votes&order=asc")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.ascendingBy("votes");
               });
           });
         });

@@ -38,8 +38,9 @@ exports.postComment = (req, res, next) => {
 
 exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by } = req.query;
-  fetchComments(article_id, sort_by)
+
+  const { sort_by, order } = req.query;
+  fetchComments(article_id, sort_by, order)
     .then(comments => {
       res.status(200).send({ comments });
     })
