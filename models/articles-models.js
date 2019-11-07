@@ -31,8 +31,9 @@ exports.fetchArticles = ({
     });
 };
 
-exports.updateVotes = (article_id, newVotes) => {
-  const update = newVotes > 0 ? "increment" : "decrement";
+exports.updateVotes = (article_id, newVotes = 0) => {
+  console.log(newVotes);
+  const update = newVotes >= 0 ? "increment" : "decrement";
   return knex("articles")
     .where("article_id", article_id)
     [update]("votes", Math.abs(newVotes))

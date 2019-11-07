@@ -31,8 +31,9 @@ exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
   const body = req.body;
   body.article_id = article_id;
-  addComment(body)
-    .then(comment => {
+  Promise.all([addComment(body), fetchUser(body.username)])
+
+    .then(([comment]) => {
       res.status(201).send({ comment });
     })
     .catch(next);

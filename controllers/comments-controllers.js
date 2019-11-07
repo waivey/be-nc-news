@@ -4,9 +4,10 @@ const {
 } = require("../models/comments-models.js");
 
 exports.patchComment = (req, res, next) => {
-  const { inc_vote } = req.body;
+  const { inc_votes } = req.body;
+
   const { comment_id } = req.params;
-  updateComment(comment_id, inc_vote)
+  updateComment(comment_id, inc_votes)
     .then(comment => {
       res.status(201).send({ comment });
     })

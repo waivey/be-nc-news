@@ -27,6 +27,17 @@ describe("app", () => {
     });
   });
   describe("/api", () => {
+    it("status:405 Method Not Allowed", () => {
+      const invalidMethods = ["post", "patch", "put", "delete"];
+      const promiseArr = invalidMethods.map(method => {
+        return request[method]("/api")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method Not Allowed");
+          });
+      });
+      return promiseArr;
+    });
     describe("GET", () => {
       it("status:200 responds with a JSON of all available endpoints", () => {
         return request
@@ -266,6 +277,7 @@ describe("app", () => {
               .expect(201)
               .then(({ body: { article } }) => {
                 expect(article.votes).to.equal(101);
+                expect(article.article_id).to.equal(1);
                 expect(article).to.have.keys(
                   "article_id",
                   "title",
@@ -284,6 +296,26 @@ describe("app", () => {
               .expect(201)
               .then(({ body: { article } }) => {
                 expect(article.votes).to.equal(95);
+                expect(article.article_id).to.equal(1);
+                expect(article).to.have.keys(
+                  "article_id",
+                  "title",
+                  "body",
+                  "votes",
+                  "topic",
+                  "author",
+                  "created_at"
+                );
+              });
+          });
+          it("status:201 responds with the article object if patch request is made with an empty object", () => {
+            return request
+              .patch("/api/articles/1")
+              .send({})
+              .expect(201)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(100);
+                expect(article.article_id).to.equal(1);
                 expect(article).to.have.keys(
                   "article_id",
                   "title",
@@ -307,7 +339,7 @@ describe("app", () => {
           it("status:400 Bad Request -> invalid input", () => {
             return request
               .patch("/api/articles/1")
-              .send({ inc_votes: "yes" })
+              .send({ inc_votes: "bananas" })
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Bad Request");
@@ -394,6 +426,24 @@ describe("app", () => {
                 expect(comment).to.equal("yes, totally");
               });
           });
+          it("status:422 Unprocessable Entity for invalid request body: username nonexistent", () => {
+            return request
+              .post("/api/articles/1/comments")
+              .send({ username: "waivey", body: "bananas" })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Unprocessable Entity");
+              });
+          });
+          it("status:400 Bad Request for invalid request body: body value is empty", () => {
+            return request
+              .post("/api/articles/1/comments")
+              .send({ username: "butter_bridge" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
           it("status:422 Unprocessable Entity for valid but nonexistent article id", () => {
             return request
               .post("/api/articles/123455/comments")
@@ -432,7 +482,7 @@ describe("app", () => {
           it("status:201 responds with the updated comment", () => {
             return request
               .patch("/api/comments/1")
-              .send({ inc_vote: 1 })
+              .send({ inc_votes: 1 })
               .expect(201)
               .then(({ body: { comment } }) => {
                 expect(comment).to.have.keys(
@@ -443,13 +493,32 @@ describe("app", () => {
                   "votes",
                   "body"
                 );
+                expect(comment.comment_id).to.equal(1);
                 expect(comment.votes).to.equal(17);
+              });
+          });
+          it("status:201 responds with the comment of requested comment id if patch request made with empty object", () => {
+            return request
+              .patch("/api/comments/1")
+              .send({})
+              .expect(201)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.have.keys(
+                  "comment_id",
+                  "created_at",
+                  "article_id",
+                  "author",
+                  "votes",
+                  "body"
+                );
+                expect(comment.comment_id).to.equal(1);
+                expect(comment.votes).to.equal(16);
               });
           });
           it("status:404 valid but nonexistent comment_id", () => {
             return request
               .patch("/api/comments/1233456")
-              .send({ inc_vote: 1 })
+              .send({ inc_votes: 1 })
               .expect(404)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Path Not Found");
@@ -458,7 +527,7 @@ describe("app", () => {
           it("status:400 Bad Request comment_id", () => {
             return request
               .patch("/api/comments/bananas")
-              .send({ inc_vote: 1 })
+              .send({ inc_votes: 1 })
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Bad Request");
@@ -467,7 +536,7 @@ describe("app", () => {
           it("status:400 Bad Request -> invalid input", () => {
             return request
               .patch("/api/comments/1")
-              .send({ inc_votes: "yes" })
+              .send({ inc_votes: "bananas" })
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Bad Request");

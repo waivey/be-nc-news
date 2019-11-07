@@ -69,3 +69,5 @@ npm i supertest -D
 Yay! Everything should now be installed and ready to roll.
 
 Because there's a lot going on between Knex, Pg, and the test files (because you should _always_ test your code!), and the commands would be long and unruly, there are some handy scripts you can use!
+
+You can find all the scripts in packag.json, but here are some you might find super important and useful.

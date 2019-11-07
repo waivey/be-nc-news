@@ -29,7 +29,7 @@ exports.fetchComments = (article_id, order_by, direction) => {
   // });
 };
 
-exports.updateComment = (comment_id, newVotes) => {
+exports.updateComment = (comment_id, newVotes = 0) => {
   const update = newVotes > 0 ? "increment" : "decrement";
   return knex("comments")
     .where("comment_id", comment_id)
