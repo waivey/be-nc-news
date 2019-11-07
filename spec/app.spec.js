@@ -147,12 +147,44 @@ describe("app", () => {
                 expect(articles[0].author).to.equal("butter_bridge");
               });
           });
+          it("status:200 an empty array when filtered by query of author=lurker", () => {
+            return request
+              .get("/api/articles?author=lurker")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(0);
+              });
+          });
           it("status:200 array of article objects filtered by query of topic", () => {
             return request
               .get("/api/articles?topic=mitch")
               .expect(200)
               .then(({ body: { articles } }) => {
                 expect(articles[0].topic).to.equal("mitch");
+              });
+          });
+          it("status:200 an empty array when filterd by query of topic=paper", () => {
+            return request
+              .get("/api/articles?topic=paper")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(0);
+              });
+          });
+          it("status:404 error message when filtered by query of non-existent author", () => {
+            return request
+              .get("/api/articles?author=waivey")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
+          it("status:404 error message when filtered by query of non-existent topic", () => {
+            return request
+              .get("/api/articles?topic=bananas")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
               });
           });
         });

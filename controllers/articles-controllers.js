@@ -4,10 +4,12 @@ const {
   checkArticlesExists
 } = require("../models/articles-models.js");
 const { addComment, fetchComments } = require("../models/comments-models");
+const { fetchUser } = require("../models/users-models");
+const { fetchAllTopics } = require("../models/topics-models");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
-  Promise.all([fetchArticles(article_id), checkArticlesExists(article_id)])
+  Promise.all([fetchArticles({ article_id }), checkArticlesExists(article_id)])
 
     .then(([[article]]) => {
       res.status(200).send({ article });
@@ -51,10 +53,12 @@ exports.getComments = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  let article_id;
-
-  fetchArticles(article_id, req.query)
-    .then(articles => {
+  Promise.all([
+    fetchArticles({ ...req.query }),
+    fetchUser(req.query.author),
+    fetchAllTopics(req.query.topic)
+  ])
+    .then(([articles]) => {
       res.status(200).send({ articles });
     })
     .catch(next);
