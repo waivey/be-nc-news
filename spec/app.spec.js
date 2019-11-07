@@ -314,12 +314,12 @@ describe("app", () => {
                 expect(comments).to.be.ascendingBy("votes");
               });
           });
-          it("status:422 Unprocessable Entity for valid but nonexistent article id", () => {
+          it("status:404 Path Not Found for valid but nonexistent article id", () => {
             return request
               .get("/api/articles/123455/comments")
-              .expect(422)
+              .expect(404)
               .then(({ body: { msg } }) => {
-                expect(msg).to.equal("Unprocessable Entity");
+                expect(msg).to.equal("Path Not Found");
               });
           });
           it("status:400 Bad Request for invalid article id", () => {

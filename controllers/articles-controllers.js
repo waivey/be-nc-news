@@ -1,15 +1,15 @@
 const {
   fetchArticles,
   updateVotes,
-  addComment,
-  fetchComments
+  checkArticlesExists
 } = require("../models/articles-models.js");
+const { addComment, fetchComments } = require("../models/comments-models");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
+  Promise.all([fetchArticles(article_id), checkArticlesExists(article_id)])
 
-  fetchArticles(article_id)
-    .then(([article]) => {
+    .then(([[article]]) => {
       res.status(200).send({ article });
     })
     .catch(next);
@@ -40,8 +40,11 @@ exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
 
   const { sort_by, order } = req.query;
-  fetchComments(article_id, sort_by, order)
-    .then(comments => {
+  Promise.all([
+    fetchComments(article_id, sort_by, order),
+    checkArticlesExists(article_id)
+  ])
+    .then(([comments]) => {
       res.status(200).send({ comments });
     })
     .catch(next);
