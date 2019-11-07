@@ -27,6 +27,27 @@ describe("app", () => {
     });
   });
   describe("/api", () => {
+    describe("GET", () => {
+      it("status:200 responds with a JSON of all available endpoints", () => {
+        return request
+          .get("/api")
+          .expect(200)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.be.an("object");
+            expect(msg).to.have.keys(
+              "GET /api/topic",
+              "GET /api/users/:username",
+              "GET /api/articles/:article_id",
+              "PATCH /api/articles/:article_id",
+              "GET /api/articles/:article_id/comments",
+              "POST /api/articles/:article_id/comments",
+              "GET /api/articles",
+              "PATCH /api/comments/:comment_id",
+              "DELETE /api/comments/:comment_id"
+            );
+          });
+      });
+    });
     describe("/topics", () => {
       it("status:405 responds with method not allowed", () => {
         const invalidMethods = ["post", "patch", "put", "delete"];
