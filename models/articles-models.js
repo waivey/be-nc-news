@@ -7,9 +7,18 @@ exports.fetchArticles = ({
   author,
   topic
 }) => {
-  return knex
-    .select("articles.*")
-    .from("articles")
+  return knex("articles")
+    .modify(query => {
+      if (article_id) query.select("articles.*");
+      query.select(
+        "articles.author",
+        "articles.title",
+        "articles.article_id",
+        "articles.topic",
+        "articles.created_at",
+        "articles.votes"
+      );
+    })
     .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .groupBy("articles.article_id")
@@ -18,21 +27,10 @@ exports.fetchArticles = ({
       if (article_id) query.where("articles.article_id", article_id);
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
-    })
-    .then(result => {
-      if (!article_id) {
-        return result.map(article => {
-          delete article.body;
-          return { ...article };
-        });
-      } else {
-        return result;
-      }
     });
 };
 
 exports.updateVotes = (article_id, newVotes = 0) => {
-  console.log(newVotes);
   const update = newVotes >= 0 ? "increment" : "decrement";
   return knex("articles")
     .where("article_id", article_id)
