@@ -16,11 +16,7 @@ exports.fetchArticles = ({
     .orderBy(sort_by, order)
     .modify(query => {
       if (article_id) query.where("articles.article_id", article_id);
-    })
-    .modify(query => {
       if (author) query.where("articles.author", author);
-    })
-    .modify(query => {
       if (topic) query.where("articles.topic", topic);
     })
     .then(result => {
