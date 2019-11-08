@@ -78,6 +78,8 @@ describe("app", () => {
             .expect(200)
             .then(({ body: { topics } }) => {
               expect(topics).to.be.an("array");
+              expect(topics.length).to.equal(3);
+              expect(topics).to.be.sortedBy("description");
               expect(topics[0]).to.have.keys("slug", "description");
             });
         });
@@ -203,6 +205,14 @@ describe("app", () => {
                 expect(articles.length).to.equal(0);
               });
           });
+          it("status:400 error message when sorted by nonexistent column", () => {
+            return request
+              .get("/api/articles?sort_by=bananas")
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
           it("status:404 error message when filtered by query of non-existent author", () => {
             return request
               .get("/api/articles?author=waivey")
@@ -270,11 +280,11 @@ describe("app", () => {
           });
         });
         describe("PATCH", () => {
-          it("status:201 responds with an updated article object with votes property having been updated according to the request -> increasing", () => {
+          it("status:200 responds with an updated article object with votes property having been updated according to the request -> increasing", () => {
             return request
               .patch("/api/articles/1")
               .send({ inc_votes: 1 })
-              .expect(201)
+              .expect(200)
               .then(({ body: { article } }) => {
                 expect(article.votes).to.equal(101);
                 expect(article.article_id).to.equal(1);
@@ -289,11 +299,11 @@ describe("app", () => {
                 );
               });
           });
-          it("status:201 responds with an updated article object with votes property having been updated according to the request -> decreasing", () => {
+          it("status:200 responds with an updated article object with votes property having been updated according to the request -> decreasing", () => {
             return request
               .patch("/api/articles/1")
               .send({ inc_votes: -5 })
-              .expect(201)
+              .expect(200)
               .then(({ body: { article } }) => {
                 expect(article.votes).to.equal(95);
                 expect(article.article_id).to.equal(1);
@@ -308,11 +318,11 @@ describe("app", () => {
                 );
               });
           });
-          it("status:201 responds with the article object if patch request is made with an empty object", () => {
+          it("status:200 responds with the article object if patch request is made with an empty object", () => {
             return request
               .patch("/api/articles/1")
               .send({})
-              .expect(201)
+              .expect(200)
               .then(({ body: { article } }) => {
                 expect(article.votes).to.equal(100);
                 expect(article.article_id).to.equal(1);
@@ -399,6 +409,14 @@ describe("app", () => {
                 expect(comments).to.be.ascendingBy("votes");
               });
           });
+          it("status:400 error message when sorted by nonexistent column", () => {
+            return request
+              .get("/api/articles/1/comments?sort_by=bananas")
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
           it("status:404 Path Not Found for valid but nonexistent article id", () => {
             return request
               .get("/api/articles/123455/comments")
@@ -423,7 +441,13 @@ describe("app", () => {
               .send({ username: "butter_bridge", body: "yes, totally" })
               .expect(201)
               .then(({ body: { comment } }) => {
-                expect(comment).to.equal("yes, totally");
+                expect(comment).to.have.keys(
+                  "comment_id",
+                  "author",
+                  "body",
+                  "votes",
+                  "created_at"
+                );
               });
           });
           it("status:422 Unprocessable Entity for invalid request body: username nonexistent", () => {
@@ -479,11 +503,11 @@ describe("app", () => {
           return promiseArr;
         });
         describe("PATCH", () => {
-          it("status:201 responds with the updated comment", () => {
+          it("status:200 responds with the updated comment", () => {
             return request
               .patch("/api/comments/1")
               .send({ inc_votes: 1 })
-              .expect(201)
+              .expect(200)
               .then(({ body: { comment } }) => {
                 expect(comment).to.have.keys(
                   "comment_id",
@@ -497,11 +521,11 @@ describe("app", () => {
                 expect(comment.votes).to.equal(17);
               });
           });
-          it("status:201 responds with the comment of requested comment id if patch request made with empty object", () => {
+          it("status:200 responds with the comment of requested comment id if patch request made with empty object", () => {
             return request
               .patch("/api/comments/1")
               .send({})
-              .expect(201)
+              .expect(200)
               .then(({ body: { comment } }) => {
                 expect(comment).to.have.keys(
                   "comment_id",

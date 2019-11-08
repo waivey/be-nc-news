@@ -5,7 +5,7 @@ const {
 } = require("../models/articles-models.js");
 const { addComment, fetchComments } = require("../models/comments-models");
 const { fetchUser } = require("../models/users-models");
-const { fetchAllTopics } = require("../models/topics-models");
+const { fetchAllTopics, checkTopicExists } = require("../models/topics-models");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
@@ -22,7 +22,7 @@ exports.patchArticleVotes = (req, res, next) => {
   const { inc_votes } = req.body;
   updateVotes(article_id, inc_votes)
     .then(([article]) => {
-      res.status(201).send({ article });
+      res.status(200).send({ article });
     })
     .catch(next);
 };
@@ -41,7 +41,6 @@ exports.postComment = (req, res, next) => {
 
 exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
-
   const { sort_by, order } = req.query;
   Promise.all([
     fetchComments(article_id, sort_by, order),
@@ -56,8 +55,9 @@ exports.getComments = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
   Promise.all([
     fetchArticles({ ...req.query }),
+    fetchAllTopics(req.query.topic),
     fetchUser(req.query.author),
-    fetchAllTopics(req.query.topic)
+    checkTopicExists(req.query.topic)
   ])
     .then(([articles]) => {
       res.status(200).send({ articles });

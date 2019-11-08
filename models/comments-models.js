@@ -3,12 +3,16 @@ const knex = require("../db/connection");
 exports.addComment = commentObj => {
   const value = commentObj.username;
   commentObj.author = value;
-  delete commentObj.username;
   return knex("comments")
-    .insert(commentObj)
+    .insert({
+      author: commentObj.author,
+      body: commentObj.body,
+      article_id: commentObj.article_id
+    })
     .returning("*")
     .then(([newCommentObj]) => {
-      return newCommentObj.body;
+      const updatedComment = ({ article_id, ...rest }) => rest;
+      return updatedComment(newCommentObj);
     });
 };
 

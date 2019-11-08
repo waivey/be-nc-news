@@ -24,18 +24,26 @@ const renameKeys = (arr, keyToChange, newKey) => {
     const newObj = { ...object };
     const value = newObj[keyToChange];
     newObj[newKey] = value;
-    delete newObj[keyToChange];
-    return { ...newObj };
+
+    const updatedObject = ({ keyToChange, ...rest }) => rest;
+
+    return updatedObject;
   });
 };
 
 const formatComments = (comments, articleRef) => {
-  let newComments = renameKeys(comments, "created_by", "author");
+  const newComments = comments.map(object => {
+    const comment = { ...object };
+    comment.author = comment.created_by;
+    const updateComment = ({ created_by, ...rest }) => rest;
+    const newComment = updateComment(comment);
+    return newComment;
+  });
   const updated = newComments.map(object => {
     object.article_id = articleRef[object.belongs_to];
-
-    delete object.belongs_to;
-    return { ...object };
+    const updateObject = ({ belongs_to, ...rest }) => rest;
+    const newObject = updateObject(object);
+    return newObject;
   });
   const fullyFormated = formatDates(updated);
 
