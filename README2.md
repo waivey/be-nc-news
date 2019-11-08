@@ -33,7 +33,8 @@ Supertest
 Get your development env up and running.
 You could most likely do
 
-```npm i
+```
+npm i
 
 ```
 
@@ -41,13 +42,7 @@ and have all your dependencies downloaded, but if you'd like to be thurough, and
 
 ```
 npm i express
-```
-
-```
 npm i knex
-```
-
-```
 npm i pg
 ```
 
@@ -55,17 +50,8 @@ And don't forget the dev dependencies!
 
 ```
 npm i mocha -D
-```
-
-```
 npm i chai -D
-```
-
-```
 npm i chai-sorted -D
-```
-
-```
 npm i supertest -D
 ```
 

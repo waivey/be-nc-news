@@ -19,18 +19,6 @@ const makeRefObj = list => {
   return reference;
 };
 
-const renameKeys = (arr, keyToChange, newKey) => {
-  return arr.map(object => {
-    const newObj = { ...object };
-    const value = newObj[keyToChange];
-    newObj[newKey] = value;
-
-    const updatedObject = ({ keyToChange, ...rest }) => rest;
-
-    return updatedObject;
-  });
-};
-
 const formatComments = (comments, articleRef) => {
   const newComments = comments.map(object => {
     const comment = { ...object };
@@ -50,4 +38,4 @@ const formatComments = (comments, articleRef) => {
   return fullyFormated;
 };
 
-module.exports = { formatDates, makeRefObj, formatComments, renameKeys };
+module.exports = { formatDates, makeRefObj, formatComments };

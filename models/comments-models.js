@@ -32,12 +32,7 @@ exports.updateComment = (comment_id, newVotes = 0) => {
   return knex("comments")
     .where("comment_id", comment_id)
     [update]("votes", Math.abs(newVotes))
-    .then(() => {
-      return knex
-        .select("*")
-        .from("comments")
-        .where("comment_id", comment_id);
-    })
+    .returning("*")
     .then(([updatedComment]) => {
       return updatedComment;
     });

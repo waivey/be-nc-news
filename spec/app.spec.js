@@ -459,6 +459,15 @@ describe("app", () => {
                 expect(msg).to.equal("Unprocessable Entity");
               });
           });
+          it("status:400 Unprocessable Entity for invalid request body: username not passed", () => {
+            return request
+              .post("/api/articles/1/comments")
+              .send({ body: "bananas" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
           it("status:400 Bad Request for invalid request body: body value is empty", () => {
             return request
               .post("/api/articles/1/comments")
