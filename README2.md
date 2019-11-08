@@ -1,5 +1,7 @@
 # NC Backend Project News
 
+https://nc-backend-project-news.herokuapp.com/
+
 **This is a project on creating endpoints for a news website and working with a database**
 
 ## Getting Started
@@ -8,12 +10,13 @@ To be able to have a play with this repo, you'll need Knex to interact with your
 
 ### Prerequisites
 
-You will need to install the following software to get going
+You will need to install the following minimum versions of software to get going
 
 ```
-Express
-Knex
-Postgres
+Npm ^6.12.0 (or yarn equivalent)
+Express ^4.17.1
+Knex ^0.20.1
+Postgres ^7.12.1
 ```
 
 and these will just be for development
