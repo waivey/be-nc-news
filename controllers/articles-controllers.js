@@ -1,7 +1,8 @@
 const {
   fetchArticles,
   updateVotes,
-  checkArticlesExists
+  checkArticlesExists,
+  fetchArticleCount
 } = require("../models/articles-models.js");
 const { addComment, fetchComments } = require("../models/comments-models");
 const { fetchUser } = require("../models/users-models");
@@ -55,12 +56,13 @@ exports.getComments = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
   Promise.all([
     fetchArticles({ ...req.query }),
+    fetchArticleCount({ ...req.query }),
     fetchAllTopics(req.query.topic),
     fetchUser(req.query.author),
     checkTopicExists(req.query.topic)
   ])
-    .then(([articles]) => {
-      res.status(200).send({ articles });
+    .then(([articles, total_count]) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch(next);
 };

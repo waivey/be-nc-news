@@ -138,7 +138,7 @@ describe("app", () => {
               .expect(200)
               .then(({ body: { articles } }) => {
                 expect(articles).to.be.an("array");
-                expect(articles[1]).to.have.keys(
+                expect(articles[1]).to.include.keys(
                   "author",
                   "title",
                   "article_id",
@@ -201,8 +201,66 @@ describe("app", () => {
             return request
               .get("/api/articles?topic=paper")
               .expect(200)
-              .then(({ body: { articles } }) => {
+              .then(({ body: { articles, total_count } }) => {
                 expect(articles.length).to.equal(0);
+                expect(total_count).to.equal(0);
+              });
+          });
+          it("status:200 an array with a default limit of 10 articles", () => {
+            return request
+              .get("/api/articles")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with a valid chosen limit of articles", () => {
+            return request
+              .get("/api/articles?limit=6")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(6);
+              });
+          });
+          it("status:200 an array with an invalid chosen limit of articles with default limit set", () => {
+            return request
+              .get("/api/articles?limit=bananas")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with p query of page default set to 1", () => {
+            return request
+              .get("/api/articles")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with p query of page set to 2", () => {
+            return request
+              .get("/api/articles?p=2")
+              .expect(200)
+              .then(({ body: { articles, total_count } }) => {
+                expect(articles.length).to.equal(2);
+                expect(total_count).to.equal(12);
+              });
+          });
+          it("status:200 an array with default p query value of page set to invalid page number", () => {
+            return request
+              .get("/api/articles?p=bananas")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).to.equal(10);
+              });
+          });
+          it("status:200 has a total_count property on the return object listing total number of articles discounting the limit", () => {
+            return request
+              .get("/api/articles")
+              .expect(200)
+              .then(({ body: { total_count } }) => {
+                expect(total_count).to.equal(12);
               });
           });
           it("status:400 error message when sorted by nonexistent column", () => {
