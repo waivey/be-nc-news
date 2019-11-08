@@ -16,21 +16,15 @@ exports.addComment = commentObj => {
     });
 };
 
-exports.fetchComments = (article_id, order_by, direction) => {
+exports.fetchComments = (article_id, order_by, direction = "desc") => {
   return knex
     .select("comment_id", "votes", "created_at", "author", "body")
     .from("comments")
     .where("article_id", article_id)
     .modify(query => {
-      !direction ? (direction = "desc") : direction;
       if (order_by) query.orderBy(order_by, direction);
       else query.orderBy("created_at", direction);
     });
-  // .then(comments => {
-  //   return comments.length === 0
-  //     ? Promise.reject()
-  //     : comments;
-  // });
 };
 
 exports.updateComment = (comment_id, newVotes = 0) => {
@@ -45,9 +39,7 @@ exports.updateComment = (comment_id, newVotes = 0) => {
         .where("comment_id", comment_id);
     })
     .then(([updatedComment]) => {
-      return !updatedComment
-        ? Promise.reject({ status: 404, msg: "Path Not Found" })
-        : updatedComment;
+      return updatedComment;
     });
 };
 
@@ -59,5 +51,18 @@ exports.removeComment = comment_id => {
       return delCount === 0
         ? Promise.reject({ status: 404, msg: "Path Not Found" })
         : delCount;
+    });
+};
+
+exports.checkCommentExists = comment_id => {
+  return knex
+    .select("*")
+    .from("comments")
+    .modify(query => {
+      if (comment_id) query.where("comment_id", comment_id);
+    })
+    .then(([comment]) => {
+      if (!comment)
+        return Promise.reject({ status: 404, msg: "Path Not Found" });
     });
 };

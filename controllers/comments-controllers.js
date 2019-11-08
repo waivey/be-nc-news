@@ -1,14 +1,18 @@
 const {
   updateComment,
-  removeComment
+  removeComment,
+  checkCommentExists
 } = require("../models/comments-models.js");
 
 exports.patchComment = (req, res, next) => {
   const { inc_votes } = req.body;
 
   const { comment_id } = req.params;
-  updateComment(comment_id, inc_votes)
-    .then(comment => {
+  Promise.all([
+    updateComment(comment_id, inc_votes),
+    checkCommentExists(comment_id)
+  ])
+    .then(([comment]) => {
       res.status(200).send({ comment });
     })
     .catch(next);
