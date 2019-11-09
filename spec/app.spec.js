@@ -404,7 +404,7 @@ describe("app", () => {
       });
       describe("/:article_id", () => {
         it("status:405 method not allowed", () => {
-          const invalidMethods = ["post", "put", "delete"];
+          const invalidMethods = ["post", "put"];
           const promiseArr = invalidMethods.map(method => {
             return request[method]("/api/articles/1")
               .expect(405)
@@ -521,6 +521,27 @@ describe("app", () => {
             return request
               .patch("/api/articles/1")
               .send({ inc_votes: "bananas" })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+        });
+        describe("DELETE", () => {
+          it("status:204 no content in response", () => {
+            return request.delete("/api/articles/1").expect(204);
+          });
+          it("status:404 for valid but nonexistent article id", () => {
+            return request
+              .delete("/api/articles/1234567")
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Path Not Found");
+              });
+          });
+          it("status:400 Bad Request for invalid article id", () => {
+            return request
+              .delete("/api/articles/bananas")
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Bad Request");

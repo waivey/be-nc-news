@@ -94,3 +94,14 @@ exports.addArticle = ({ username, body, title, topic }) => {
       return article;
     });
 };
+
+exports.removeArticle = article_id => {
+  return knex("articles")
+    .where("article_id", article_id)
+    .del()
+    .then(delCount => {
+      return delCount === 0
+        ? Promise.reject({ status: 404, msg: "Path Not Found" })
+        : delCount;
+    });
+};

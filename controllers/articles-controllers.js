@@ -3,7 +3,8 @@ const {
   updateVotes,
   checkArticlesExists,
   fetchArticleCount,
-  addArticle
+  addArticle,
+  removeArticle
 } = require("../models/articles-models.js");
 const { addComment, fetchComments } = require("../models/comments-models");
 const { fetchUser } = require("../models/users-models");
@@ -77,6 +78,15 @@ exports.postArticle = (req, res, next) => {
     .then(([article, user, topic]) => {
       //console.log(article);
       res.status(201).send({ article });
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  removeArticle(article_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };
