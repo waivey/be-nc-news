@@ -2,7 +2,8 @@ const {
   fetchArticles,
   updateVotes,
   checkArticlesExists,
-  fetchArticleCount
+  fetchArticleCount,
+  addArticle
 } = require("../models/articles-models.js");
 const { addComment, fetchComments } = require("../models/comments-models");
 const { fetchUser } = require("../models/users-models");
@@ -63,6 +64,19 @@ exports.getAllArticles = (req, res, next) => {
   ])
     .then(([articles, total_count]) => {
       res.status(200).send({ articles, total_count });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  Promise.all([
+    addArticle(req.body),
+    fetchUser(req.body.username),
+    checkTopicExists(req.body.topic)
+  ])
+    .then(([article, user, topic]) => {
+      //console.log(article);
+      res.status(201).send({ article });
     })
     .catch(next);
 };

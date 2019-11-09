@@ -121,7 +121,7 @@ describe("app", () => {
     describe("/articles", () => {
       describe("/", () => {
         describe("status:405 Method Not Allowed", () => {
-          const invalidMethods = ["post", "patch", "put", "delete"];
+          const invalidMethods = ["patch", "put", "delete"];
           const promiseArr = invalidMethods.map(method => {
             return request[method]("/api/articles")
               .expect(405)
@@ -285,6 +285,119 @@ describe("app", () => {
               .expect(404)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal("Path Not Found");
+              });
+          });
+        });
+        describe("POST", () => {
+          it("status:201 responds with the new article object with the properites author, title, article_id, body, topic, created_at, votes, and comment_count when passed a req object with already existing user and topic", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "butter_bridge",
+                title: "Why testing matters",
+                body: "it just does, so do it",
+                topic: "paper"
+              })
+              .expect(201)
+              .then(({ body: { article } }) => {
+                expect(article).to.have.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "body"
+                );
+              });
+          });
+          it("status:422 responds Unprocessable Entity for valid but nonexistent topic", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "butter_bridge",
+                title: "Why testing matters",
+                body: "it just does, so do it",
+                topic: "bananas"
+              })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Unprocessable Entity");
+              });
+          });
+          it("status:422 responds Unprocessable Entity for valid but nonexistent user", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "bananas",
+                title: "Why testing matters",
+                body: "it just does, so do it",
+                topic: "paper"
+              })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Unprocessable Entity");
+              });
+          });
+          it("status:400 responds Bad Request for missing username", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                title: "Why testing matters",
+                body: "it just does, so do it",
+                topic: "paper"
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:400 responds Bad Request for missing body", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "butter_bridge",
+                title: "Why testing matters",
+                topic: "paper"
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:400 responds Bad Request for missing title", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "butter_bridge",
+                body: "bananas",
+                topic: "paper"
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:400 responds Bad Request for missing topic", () => {
+            return request
+              .post("/api/articles")
+              .send({
+                username: "butter_bridge",
+                body: "bananas",
+                title: "bananas"
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
+              });
+          });
+          it("status:400 responds Bad Request for empty req.body", () => {
+            return request
+              .post("/api/articles")
+              .send({})
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Bad Request");
               });
           });
         });

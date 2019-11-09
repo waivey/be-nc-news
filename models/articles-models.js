@@ -80,3 +80,17 @@ exports.fetchArticleCount = ({ article_id, author, topic }) => {
       return total_count;
     });
 };
+
+exports.addArticle = ({ username, body, title, topic }) => {
+  return knex("articles")
+    .insert({
+      author: username,
+      title,
+      body,
+      topic
+    })
+    .returning("*")
+    .then(([article]) => {
+      return article;
+    });
+};
