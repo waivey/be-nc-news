@@ -13,3 +13,13 @@ exports.fetchUser = username => {
         : user;
     });
 };
+
+exports.addUser = ({ username, name, avatar_url }) => {
+  return knex("users")
+    .insert({ username, name, avatar_url })
+    .returning("*");
+};
+
+exports.fetchAllUsers = () => {
+  return knex.select("*").from("users");
+};

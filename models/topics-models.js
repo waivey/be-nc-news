@@ -24,3 +24,9 @@ exports.checkTopicExists = topic => {
       if (!topic) return Promise.reject({ status: 404, msg: "Path Not Found" });
     });
 };
+
+exports.addTopic = ({ slug, description }) => {
+  return knex("topics")
+    .insert({ slug, description })
+    .returning("*");
+};

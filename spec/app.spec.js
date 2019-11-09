@@ -61,7 +61,7 @@ describe("app", () => {
     });
     describe("/topics", () => {
       it("status:405 responds with method not allowed", () => {
-        const invalidMethods = ["post", "patch", "put", "delete"];
+        const invalidMethods = ["patch", "put", "delete"];
         const promiseArr = invalidMethods.map(method => {
           return request[method]("/api/topics")
             .expect(405)
@@ -84,8 +84,108 @@ describe("app", () => {
             });
         });
       });
+      describe("POST", () => {
+        it("status:201 responds with new topic object", () => {
+          return request
+            .post("/api/topics")
+            .send({ slug: "test", description: "the importance of testing" })
+            .expect(201)
+            .then(({ body: { topic } }) => {
+              expect(topic).to.have.keys("slug", "description");
+            });
+        });
+        it("status:400 Bad Request if req body does not have slug", () => {
+          return request
+            .post("/api/topics")
+            .send({ description: "the importance of testing" })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Bad Request");
+            });
+        });
+        it("status:400 Bad Request if req body does not have description", () => {
+          return request
+            .post("/api/topics")
+            .send({ slug: "bananas" })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Bad Request");
+            });
+        });
+      });
     });
     describe("/users", () => {
+      it("status:405 Method Not Allowed", () => {
+        const invalidMethods = ["patch", "put", "delete"];
+        const promiseArr = invalidMethods.map(method => {
+          return request[method]("/api/users/butter_bridge")
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Method Not Allowed");
+            });
+        });
+        return promiseArr;
+      });
+      describe("POST", () => {
+        it("status:201 responds with a user object with the properties of username, name, avatar_url", () => {
+          return request
+            .post("/api/users")
+            .send({
+              username: "bananas",
+              name: "chacita lady",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+            })
+            .expect(201)
+            .then(({ body: { user } }) => {
+              expect(user).to.have.keys("username", "name", "avatar_url");
+            });
+        });
+        it("status:201 responds with a user object with correct properties even if only sent username", () => {
+          return request
+            .post("/api/users")
+            .send({
+              username: "bananas"
+            })
+            .expect(201)
+            .then(({ body: { user } }) => {
+              expect(user).to.have.keys("username", "name", "avatar_url");
+              expect(user.username).to.equal("bananas");
+              expect(user.name).to.equal(null);
+              expect(user.avatar_url).to.equal(null);
+            });
+        });
+        it("status:400 Bad Request if req body does not contain username value", () => {
+          return request
+            .post("/api/users")
+            .send({})
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Bad Request");
+            });
+        });
+        it("status:400 Bad Request if username already exists", () => {
+          return request
+            .post("/api/users")
+            .send({ username: "butter_bridge" })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Bad Request");
+            });
+        });
+      });
+      describe("GET", () => {
+        it("status:200 returns an array of object users", () => {
+          return request
+            .get("/api/users")
+            .expect(200)
+            .then(({ body: { users } }) => {
+              expect(users).to.be.an("array");
+              expect(users[0]).to.have.keys("username", "name", "avatar_url");
+              expect(users.length).to.equal(4);
+            });
+        });
+      });
       describe("/:username", () => {
         it("status:405 Method Not Allowed", () => {
           const invalidMethods = ["post", "patch", "put", "delete"];

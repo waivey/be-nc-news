@@ -1,5 +1,5 @@
 exports.handlePsql400s = (err, req, res, next) => {
-  const codes = ["22P02", "23502", "42703"];
+  const codes = ["22P02", "23502", "42703", "23505"];
   if (codes.includes(err.code)) res.status(400).send({ msg: "Bad Request" });
   else next(err);
 };
