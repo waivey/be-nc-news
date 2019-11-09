@@ -16,14 +16,27 @@ exports.addComment = commentObj => {
     });
 };
 
-exports.fetchComments = (article_id, order_by, direction = "desc") => {
+exports.fetchComments = ({
+  article_id,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  p = 1
+}) => {
   return knex
     .select("comment_id", "votes", "created_at", "author", "body")
     .from("comments")
     .where("article_id", article_id)
+    .orderBy(sort_by, order)
     .modify(query => {
-      if (order_by) query.orderBy(order_by, direction);
-      else query.orderBy("created_at", direction);
+      let limitNum = parseInt(limit);
+      let page = parseInt(p);
+      if (Number.isNaN(page)) page = 1;
+      if (Number.isNaN(limitNum)) {
+        query.limit(10).offset(page * 10 - 10);
+      } else {
+        query.limit(limitNum).offset(page * limitNum - limitNum);
+      }
     });
 };
 

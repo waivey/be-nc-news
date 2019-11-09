@@ -467,6 +467,54 @@ describe("app", () => {
                 expect(comments).to.be.ascendingBy("votes");
               });
           });
+          it("status:200 an array with a default limit of 10 comments", () => {
+            return request
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with a valid chosen limit of comments", () => {
+            return request
+              .get("/api/articles/1/comments?limit=6")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(6);
+              });
+          });
+          it("status:200 an array with an invalid chosen limit of comments with default limit set", () => {
+            return request
+              .get("/api/articles/1/comments?limit=bananas")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with p query of page default set to 1", () => {
+            return request
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(10);
+              });
+          });
+          it("status:200 an array with p query of page set to 2", () => {
+            return request
+              .get("/api/articles/1/comments?p=2")
+              .expect(200)
+              .then(({ body: { comments, total_count } }) => {
+                expect(comments.length).to.equal(3);
+              });
+          });
+          it("status:200 an array with default p query value of page set to invalid page number", () => {
+            return request
+              .get("/api/articles/1/comments?p=bananas")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(10);
+              });
+          });
           it("status:400 error message when sorted by nonexistent column", () => {
             return request
               .get("/api/articles/1/comments?sort_by=bananas")

@@ -42,9 +42,9 @@ exports.postComment = (req, res, next) => {
 
 exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by, order } = req.query;
+
   Promise.all([
-    fetchComments(article_id, sort_by, order),
+    fetchComments({ article_id, ...req.query }),
     checkArticlesExists(article_id)
   ])
     .then(([comments]) => {
