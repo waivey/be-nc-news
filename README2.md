@@ -6,7 +6,7 @@ https://nc-backend-project-news.herokuapp.com/
 
 ## Getting Started
 
-To be able to have a play with this repo, you'll need Knex to interact with your PSQL database, as well as Express for dealing with the server.
+To be able to have a play with this repo, you'll need Knexjs to interact with your PSQL database, as well as Express for dealing with the server.
 
 ### Prerequisites
 
@@ -91,10 +91,49 @@ test-utils
 test
 ```
 
-When you're reading to go to production, there are also some scripts for that
+When you're ready to go to production, there are also some scripts for that
 
 ```
 seed:prod
 migrate-latest:prod
 migrate-rollback:prod
+```
+
+## Running the Tests
+
+The server is hopefully fully tested, both for the api calls and any utility functions. You can run these tests with the script as mentioned earlier
+
+```
+npm test
+```
+
+Should you change any funcationality when you're having a play around, make sure to test as it will help you solve/fix problems later.
+
+## Deployment
+
+I've hosted this api server on heroku, with the link above. There's a JSON file included of all the endpoints and their description in this repo, but here are just the endpoints again:
+
+```
+GET /api/topics
+POST /api/topics
+
+GET /api/users
+POST /api/users
+
+GET /api/users/:username
+
+GET /api/articles/:article_id
+PATCH /api/articles/:article_id
+
+POST /api/articles/:article_id/comments
+GET /api/articles/:article_id/comments?sort_by={anyColumn}&order={asc|desc}&limit={default=10}&p={specificPageRequest}
+DELETE /api/articles/:article_id
+
+GET /api/articles?sort_by={anyColumn}&order={asc|desc}&author={anyUsername}&topic={anyTopic}&limit={default=10}&p={specificPageRequest}
+POST /api/articles
+
+PATCH /api/comments/:comment_id
+DELETE /api/comments/:comment_id
+
+GET /api
 ```
